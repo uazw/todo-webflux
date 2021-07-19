@@ -1,7 +1,7 @@
 package io.github.uazw.todo.config;
 
 import io.github.uazw.todo.exception.TodoValidationException;
-import io.github.uazw.todo.handler.ErrorResponse;
+import io.github.uazw.todo.handler.dto.ErrorResponse;
 import io.github.uazw.todo.handler.TodoHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

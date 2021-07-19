@@ -1,4 +1,4 @@
-package io.github.uazw.todo.handler;
+package io.github.uazw.todo.handler.dto;
 
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;

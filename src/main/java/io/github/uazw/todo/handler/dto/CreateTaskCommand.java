@@ -1,4 +1,4 @@
-package io.github.uazw.todo.handler;
+package io.github.uazw.todo.handler.dto;
 
 import org.hibernate.validator.constraints.Length;
 

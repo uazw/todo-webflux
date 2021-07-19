@@ -1,8 +1,8 @@
 package io.github.uazw.todo.handler;
 
-import io.github.uazw.todo.domain.Task;
 import io.github.uazw.todo.exception.TodoValidationException;
-import io.github.uazw.todo.repo.InMenmoryRepository;
+import io.github.uazw.todo.handler.dto.CreateTaskCommand;
+import io.github.uazw.todo.handler.dto.TaskResponse;
 import io.github.uazw.todo.service.TodoApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,23 +19,22 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 @Service
 public class TodoHandler {
 
-  private final InMenmoryRepository taskMongoRepository;
   private final Validator validator;
   private final TodoApplicationService todoApplicationService;
 
   @Autowired
-  public TodoHandler(InMenmoryRepository taskMongoRepository, Validator validator, TodoApplicationService todoApplicationService) {
-    this.taskMongoRepository = taskMongoRepository;
+  public TodoHandler(Validator validator, TodoApplicationService todoApplicationService) {
     this.validator = validator;
     this.todoApplicationService = todoApplicationService;
   }
 
-  private static Mono<? extends ServerResponse> okWithBody(Task task) {
-    return ok().bodyValue(task);
+  private static <T> Mono<? extends ServerResponse> okWithBody(T t) {
+    return ok().bodyValue(t);
   }
 
   public Mono<ServerResponse> all() {
-    return taskMongoRepository.findAll()
+    return todoApplicationService.findAll()
+        .map(TaskResponse::new)
         .collectList().flatMap(tasks -> ok().bodyValue(tasks));
   }
 
@@ -44,6 +43,7 @@ public class TodoHandler {
     return serverRequest.bodyToMono(CreateTaskCommand.class)
         .doOnNext(this::validate)
         .flatMap(todoApplicationService::createTask)
+        .map(TaskResponse::new)
         .flatMap(TodoHandler::okWithBody);
   }
 
