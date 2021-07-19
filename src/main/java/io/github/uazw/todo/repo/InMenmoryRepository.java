@@ -6,31 +6,30 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class InMenmoryRepository {
 
-  private Set<Task> tasks;
+  private Map<Long, Task> tasks;
 
   public InMenmoryRepository() {
-    tasks = new HashSet<>(List.of(
-        new Task(1, "wake me up", "chat with you"),
-        new Task(2, "wake me up", "chat with you"),
-        new Task(3, "wake me up", "chat with you")
-    ));
+    tasks = new HashMap<>(Map.of(
+        1L, new Task(1, "wake me up", "chat with you"),
+        2L, new Task(2, "wake me up", "chat with you"),
+        3L, new Task(3, "wake me up", "chat with you")));
   }
 
 
   public Flux<Task> findAll() {
-    return Flux.fromIterable(tasks);
+    return Flux.fromIterable(tasks.values());
   }
 
 
   public <S extends Task> Mono<S> save(S entity) {
-    tasks.add(entity);
+    var taskId = entity.getTaskId();
+    tasks.put(taskId, entity);
     return Mono.just(entity);
   }
 
@@ -45,8 +44,8 @@ public class InMenmoryRepository {
   }
 
 
-  public Mono<Task> findById(String s) {
-    return null;
+  public Mono<Task> findById(Long s) {
+    return Mono.justOrEmpty(tasks.get(s));
   }
 
 

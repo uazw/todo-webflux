@@ -3,6 +3,7 @@ package io.github.uazw.todo.handler;
 import io.github.uazw.todo.exception.TodoValidationException;
 import io.github.uazw.todo.handler.dto.CreateTaskCommand;
 import io.github.uazw.todo.handler.dto.TaskResponse;
+import io.github.uazw.todo.handler.dto.UpdateTaskCommand;
 import io.github.uazw.todo.service.TodoApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 @Service
 public class TodoHandler {
 
+  public static final String TASK_ID_VARIABLE = "taskId";
   private final Validator validator;
   private final TodoApplicationService todoApplicationService;
 
@@ -28,7 +30,7 @@ public class TodoHandler {
     this.todoApplicationService = todoApplicationService;
   }
 
-  private static <T> Mono<? extends ServerResponse> okWithBody(T t) {
+  private static <T> Mono<ServerResponse> okWithBody(T t) {
     return ok().bodyValue(t);
   }
 
@@ -48,7 +50,13 @@ public class TodoHandler {
   }
 
   public Mono<ServerResponse> update(ServerRequest serverRequest) {
-    return null;
+    return serverRequest.bodyToMono(UpdateTaskCommand.class)
+        .doOnNext(command -> command.setTaskId(serverRequest.pathVariable(TASK_ID_VARIABLE)))
+        .doOnNext(this::validate)
+        .flatMap(todoApplicationService::updateTask)
+        .map(TaskResponse::new)
+        .flatMap(TodoHandler::okWithBody)
+        .switchIfEmpty(Mono.defer(() -> ServerResponse.notFound().build()));
   }
 
   private <T> void validate(T command) {

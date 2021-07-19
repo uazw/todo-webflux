@@ -2,6 +2,7 @@ package io.github.uazw.todo.service;
 
 import io.github.uazw.todo.domain.Task;
 import io.github.uazw.todo.handler.dto.CreateTaskCommand;
+import io.github.uazw.todo.handler.dto.UpdateTaskCommand;
 import io.github.uazw.todo.repo.InMenmoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,10 @@ public class TodoApplicationService {
 
   public Flux<Task> findAll() {
     return repository.findAll();
+  }
+
+  public Mono<Task> updateTask(UpdateTaskCommand updateTaskCommand) {
+    return repository.findById(updateTaskCommand.getTaskId())
+        .doOnNext(task -> task.update(updateTaskCommand));
   }
 }

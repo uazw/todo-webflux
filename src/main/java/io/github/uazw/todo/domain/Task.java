@@ -1,5 +1,7 @@
 package io.github.uazw.todo.domain;
 
+import io.github.uazw.todo.handler.dto.UpdateTaskCommand;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -74,5 +76,10 @@ public class Task {
   @Override
   public int hashCode() {
     return Objects.hash(taskId, name, description, createAt, updateAt);
+  }
+
+  public void update(UpdateTaskCommand updateTaskCommand) {
+    name = updateTaskCommand.getName();
+    description = updateTaskCommand.getDescription();
   }
 }

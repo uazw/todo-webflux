@@ -1,8 +1,8 @@
 package io.github.uazw.todo.config;
 
 import io.github.uazw.todo.exception.TodoValidationException;
-import io.github.uazw.todo.handler.dto.ErrorResponse;
 import io.github.uazw.todo.handler.TodoHandler;
+import io.github.uazw.todo.handler.dto.ErrorResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
@@ -10,6 +10,8 @@ import org.springframework.web.reactive.function.server.*;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Supplier;
+
+import static io.github.uazw.todo.handler.TodoHandler.TASK_ID_VARIABLE;
 
 @Configuration
 public class WebConfig implements WebFluxConfigurer {
@@ -22,7 +24,9 @@ public class WebConfig implements WebFluxConfigurer {
   public RouterFunction<ServerResponse> todoRouter(TodoHandler handler) {
     return RouterFunctions.route()
         .path("/todo", builder -> builder
-            .GET(sup2Func(handler::all)).POST(handler::create).PUT(handler::update))
+            .GET(sup2Func(handler::all))
+            .POST(handler::create)
+            .PUT(String.format("/{%s}", TASK_ID_VARIABLE), handler::update))
         .filter(this::errorHandler)
         .build();
   }
