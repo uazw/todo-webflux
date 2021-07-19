@@ -31,4 +31,8 @@ public class TodoApplicationService {
     return repository.findById(updateTaskCommand.getTaskId())
         .doOnNext(task -> task.update(updateTaskCommand));
   }
+
+  public Mono<Void> delete(long s) {
+    return repository.deleteById(s);
+  }
 }

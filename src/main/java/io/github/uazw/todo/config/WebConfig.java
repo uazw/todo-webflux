@@ -11,8 +11,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Supplier;
 
-import static io.github.uazw.todo.handler.TodoHandler.TASK_ID_VARIABLE;
-
 @Configuration
 public class WebConfig implements WebFluxConfigurer {
 
@@ -23,10 +21,11 @@ public class WebConfig implements WebFluxConfigurer {
   @Bean
   public RouterFunction<ServerResponse> todoRouter(TodoHandler handler) {
     return RouterFunctions.route()
-        .path("/todo", builder -> builder
+        .path("/todo", tasks -> tasks
             .GET(sup2Func(handler::all))
             .POST(handler::create)
-            .PUT(String.format("/{%s}", TASK_ID_VARIABLE), handler::update))
+            .nest(RequestPredicates.path("/{taskId}"), task ->
+                task.PUT(handler::update).DELETE(handler::delete)))
         .filter(this::errorHandler)
         .build();
   }

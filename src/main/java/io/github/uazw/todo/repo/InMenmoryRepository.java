@@ -78,8 +78,9 @@ public class InMenmoryRepository {
   }
 
 
-  public Mono<Void> deleteById(String s) {
-    return null;
+  public Mono<Void> deleteById(Long s) {
+    tasks.remove(s);
+    return Mono.empty();
   }
 
 

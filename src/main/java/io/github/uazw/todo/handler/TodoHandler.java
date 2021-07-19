@@ -66,4 +66,11 @@ public class TodoHandler {
       throw new TodoValidationException(errors);
     }
   }
+
+  public Mono<ServerResponse> delete(ServerRequest serverRequest) {
+    return Mono.just(serverRequest.pathVariable(TASK_ID_VARIABLE))
+        .map(Long::valueOf)
+        .doOnNext(todoApplicationService::delete)
+        .flatMap(x -> Mono.defer(() -> ServerResponse.noContent().build()));
+  }
 }
