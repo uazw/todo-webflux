@@ -2,11 +2,13 @@ package io.github.uazw.todo.handler.dto;
 
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 public class CreateTaskCommand {
 
   @Pattern(regexp = "^[a-zA-Z0-9]{1,50}$")
+  @NotBlank
   private String name;
   @Length(max = 500)
   private String description;

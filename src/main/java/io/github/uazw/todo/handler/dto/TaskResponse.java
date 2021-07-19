@@ -17,7 +17,7 @@ public class TaskResponse {
   private final String updateAt;
 
   public TaskResponse(Task task) {
-    this(task.getTaskId(), task.getName(), task.getDescription(), getOf(task.getCreateAt()), getOf(task.getUpdateAt()));
+    this(task.getTaskId(), task.getName(), task.getDescription(), getOf(task.getCreatedAt()), getOf(task.getUpdatedAt()));
   }
 
   public TaskResponse(long taskId, String name, String description, String createAt, String updateAt) {

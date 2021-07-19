@@ -1,28 +1,29 @@
 package io.github.uazw.todo.domain;
 
 import io.github.uazw.todo.handler.dto.UpdateTaskCommand;
+import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
 
+  @Id
   private long taskId;
   private String name;
   private String description;
-  private LocalDateTime createAt;
-  private LocalDateTime updateAt;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
   public Task() {
   }
 
-  public Task(long taskId, String name, String description) {
-    this.taskId = taskId;
+  public Task(String name, String description) {
     this.name = name;
     this.description = description;
     var now = LocalDateTime.now();
-    this.createAt = now;
-    this.updateAt = now;
+    this.createdAt = now;
+    this.updatedAt = now;
   }
 
   public long getTaskId() {
@@ -49,20 +50,20 @@ public class Task {
     this.description = description;
   }
 
-  public LocalDateTime getCreateAt() {
-    return createAt;
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
   }
 
-  public void setCreateAt(LocalDateTime createAt) {
-    this.createAt = createAt;
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 
-  public LocalDateTime getUpdateAt() {
-    return updateAt;
+  public LocalDateTime getUpdatedAt() {
+    return updatedAt;
   }
 
-  public void setUpdateAt(LocalDateTime updateAt) {
-    this.updateAt = updateAt;
+  public void setUpdatedAt(LocalDateTime updatedAt) {
+    this.updatedAt = updatedAt;
   }
 
   @Override
@@ -70,12 +71,12 @@ public class Task {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Task task = (Task) o;
-    return taskId == task.taskId && Objects.equals(name, task.name) && Objects.equals(description, task.description) && Objects.equals(createAt, task.createAt) && Objects.equals(updateAt, task.updateAt);
+    return taskId == task.taskId && Objects.equals(name, task.name) && Objects.equals(description, task.description) && Objects.equals(createdAt, task.createdAt) && Objects.equals(updatedAt, task.updatedAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(taskId, name, description, createAt, updateAt);
+    return Objects.hash(taskId, name, description, createdAt, updatedAt);
   }
 
   public void update(UpdateTaskCommand updateTaskCommand) {

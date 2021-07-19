@@ -30,10 +30,6 @@ public class TodoHandler {
     this.todoApplicationService = todoApplicationService;
   }
 
-  private static <T> Mono<ServerResponse> okWithBody(T t) {
-    return ok().bodyValue(t);
-  }
-
   public Mono<ServerResponse> all() {
     return todoApplicationService.findAll()
         .map(TaskResponse::new)
@@ -59,18 +55,22 @@ public class TodoHandler {
         .switchIfEmpty(Mono.defer(() -> ServerResponse.notFound().build()));
   }
 
+  public Mono<ServerResponse> delete(ServerRequest serverRequest) {
+    return Mono.just(serverRequest.pathVariable(TASK_ID_VARIABLE))
+        .map(Long::valueOf)
+        .doOnNext(todoApplicationService::delete)
+        .flatMap(x -> Mono.defer(() -> ServerResponse.noContent().build()));
+  }
+
+  private static <T> Mono<ServerResponse> okWithBody(T t) {
+    return ok().bodyValue(t);
+  }
+
   private <T> void validate(T command) {
     Errors errors = new BeanPropertyBindingResult(command, "task");
     validator.validate(command, errors);
     if (errors.hasErrors()) {
       throw new TodoValidationException(errors);
     }
-  }
-
-  public Mono<ServerResponse> delete(ServerRequest serverRequest) {
-    return Mono.just(serverRequest.pathVariable(TASK_ID_VARIABLE))
-        .map(Long::valueOf)
-        .doOnNext(todoApplicationService::delete)
-        .flatMap(x -> Mono.defer(() -> ServerResponse.noContent().build()));
   }
 }
