@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.function.server.*;
 import reactor.core.publisher.Mono;
+import reactor.util.annotation.NonNull;
 
 import java.util.function.Supplier;
 
@@ -30,6 +31,7 @@ public class WebConfig implements WebFluxConfigurer {
         .build();
   }
 
+  @NonNull
   private Mono<ServerResponse> errorHandler(ServerRequest request, HandlerFunction<ServerResponse> next) {
     return next.handle(request).onErrorResume(TodoValidationException.class,
         (ex) -> ServerResponse.badRequest().bodyValue(new ErrorResponse(ex.getBindingResult())));

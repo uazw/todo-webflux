@@ -30,14 +30,19 @@ public class TodoHandler {
     this.todoApplicationService = todoApplicationService;
   }
 
+  private static <T> Mono<ServerResponse> okWithBody(T t) {
+    return ok().bodyValue(t);
+  }
+
+  @NonNull
   public Mono<ServerResponse> all() {
     return todoApplicationService.findAll()
         .map(TaskResponse::new)
         .collectList().flatMap(tasks -> ok().bodyValue(tasks));
   }
 
-  public @NonNull
-  Mono<ServerResponse> create(ServerRequest serverRequest) {
+  @NonNull
+  public Mono<ServerResponse> create(ServerRequest serverRequest) {
     return serverRequest.bodyToMono(CreateTaskCommand.class)
         .doOnNext(this::validate)
         .flatMap(todoApplicationService::createTask)
@@ -45,6 +50,7 @@ public class TodoHandler {
         .flatMap(TodoHandler::okWithBody);
   }
 
+  @NonNull
   public Mono<ServerResponse> update(ServerRequest serverRequest) {
     return serverRequest.bodyToMono(UpdateTaskCommand.class)
         .doOnNext(command -> command.setTaskId(serverRequest.pathVariable(TASK_ID_VARIABLE)))
@@ -52,18 +58,15 @@ public class TodoHandler {
         .flatMap(todoApplicationService::updateTask)
         .map(TaskResponse::new)
         .flatMap(TodoHandler::okWithBody)
-        .switchIfEmpty(Mono.defer(() -> ServerResponse.notFound().build()));
+        .switchIfEmpty(ServerResponse.notFound().build());
   }
 
+  @NonNull
   public Mono<ServerResponse> delete(ServerRequest serverRequest) {
     return Mono.just(serverRequest.pathVariable(TASK_ID_VARIABLE))
         .map(Long::valueOf)
         .doOnNext(todoApplicationService::delete)
-        .flatMap(x -> Mono.defer(() -> ServerResponse.noContent().build()));
-  }
-
-  private static <T> Mono<ServerResponse> okWithBody(T t) {
-    return ok().bodyValue(t);
+        .flatMap(x -> ServerResponse.noContent().build());
   }
 
   private <T> void validate(T command) {
